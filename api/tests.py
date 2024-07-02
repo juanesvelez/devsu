@@ -5,9 +5,8 @@ from .models import User
 
 class TestUserView(APITestCase):
     def setUp(self):
-        user = User(name='Test1', dni='09876543210')
-        user.save()
-        self.url = reverse("users-list")
+        self.user = User.objects.create(name='Test1', dni='09876543210')
+        self.url = reverse("user-list")
         self.data = {'name': 'Test2', 'dni': '09876543211'}
 
     def test_post(self):
@@ -25,9 +24,9 @@ class TestUserView(APITestCase):
         self.assertEqual(len(json.loads(response.content)), 1)
 
     def test_get(self):
-        response = self.client.get(self.url + '1/')
+        response = self.client.get(reverse("user-detail", args=[self.user.id]))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             json.loads(response.content),
-            {"id": 1, "name": "Test1", "dni": "09876543210"}
+            {"id": self.user.id, "name": "Test1", "dni": "09876543210"}
         )
