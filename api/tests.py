@@ -7,7 +7,8 @@ from .models import User
 class TestUserView(APITestCase):
 
     def setUp(self):
-        self.user = User.objects.create(name='Test1', dni='09876543210')
+        self.user = User(name='Test1', dni='09876543210')
+        self.user.save()
         self.url_list = reverse("users-list")
         self.url_detail = reverse("users-detail", args=[self.user.id])
         self.data = {'name': 'Test2', 'dni': '09876543211'}
