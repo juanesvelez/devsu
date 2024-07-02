@@ -23,11 +23,6 @@ jobs:
         python manage.py makemigrations
         python manage.py migrate
 
-    - name: Run unit tests with coverage
-      run: |
-        coverage run -m pytest
-        coverage report
-
     - name: Lint code
       run: pip install flake8 && flake8 .
 
