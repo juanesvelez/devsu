@@ -31,3 +31,4 @@ class TestUserView(APITestCase):
             json.loads(response.content),
             {"id": self.user.id, "name": "Test1", "dni": "09876543210"}
         )
+        
