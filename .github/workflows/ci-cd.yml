@@ -23,14 +23,13 @@ jobs:
         python manage.py makemigrations
         python manage.py migrate
 
-    - name: Run unit tests
-      run: python manage.py test
+    - name: Run unit tests with coverage
+      run: |
+        coverage run -m pytest
+        coverage report
 
     - name: Lint code
       run: pip install flake8 && flake8 .
-
-    - name: Code coverage
-      run: pip install coverage && coverage run -m pytest && coverage report
 
     - name: Log in to GitHub Container Registry
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
