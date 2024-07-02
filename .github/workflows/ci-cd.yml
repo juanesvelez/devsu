@@ -22,7 +22,7 @@ jobs:
       run: |
         python manage.py makemigrations
         python manage.py migrate
-
+        
     - name: Lint code
       run: pip install flake8 && flake8 .
 
@@ -36,5 +36,14 @@ jobs:
       if: success()
       run: docker push ghcr.io/${{ github.repository }}/demo-devops-python:latest
 
-    - name: Vulnerability scan
-      run: docker scan ghcr.io/${{ github.repository }}/demo-devops-python:latest
+    - name: Install Trivy
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install wget apt-transport-https gnupg lsb-release -y
+        wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+        echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+        sudo apt-get update -y
+        sudo apt-get install trivy -y
+
+    - name: Vulnerability scan with Trivy
+      run: trivy image ghcr.io/${{ github.repository }}/demo-devops-python:latest
