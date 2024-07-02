@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-devops-python
+  namespace: devsu-demo-devops-python-ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: demo-devops-python
+  template:
+    metadata:
+      labels:
+        app: demo-devops-python
+    spec:
+      containers:
+        - name: demo-devops-python
+          image: ghcr.io/juanesvelez/devsu:${TAG}
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_NAME
+              value: db.sqlite3
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: django-secret
+                  key: DJANGO_SECRET_KEY
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 60
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 60
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 250m
+            limits:
+              memory: 128Mi
+              cpu: 500m

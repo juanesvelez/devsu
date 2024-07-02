@@ -47,11 +47,24 @@ jobs:
       run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
     - name: Build Docker image
-      run: docker build -t ghcr.io/${{ github.repository }}/demo-devops-python:latest .
+      id: build-image
+      run: |
+        TAG=${{ github.sha }}
+        docker build -t ghcr.io/${{ github.repository }}/demo-devops-python:${TAG} .
+        echo "::set-output name=tag::${TAG}"
+        echo "Built image with tag $TAG"
 
     - name: Push Docker image to GitHub Container Registry
-      if: success()
-      run: docker push ghcr.io/${{ github.repository }}/demo-devops-python:latest
+      run: docker push ghcr.io/${{ github.repository }}/demo-devops-python:${{ steps.build-image.outputs.tag }}
+
+    - name: Update Kubernetes manifests with new image tag
+      run: |
+        sed -i "s#ghcr.io/juanesvelez/devsu:.*#ghcr.io/juanesvelez/devsu:${{ steps.build-image.outputs.tag }}#g" k8s/deployment.yaml
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        git add k8s/deployment.yaml
+        git commit -m "Update image tag to ${{ steps.build-image.outputs.tag }}"
+        git push
 
     - name: Install Trivy
       run: |
