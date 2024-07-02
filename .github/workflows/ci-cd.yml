@@ -66,7 +66,7 @@ jobs:
         git commit -m "Update image tag to ${{ steps.build-image.outputs.tag }}"
         git push
       env:
-        GITHUB_TOKEN: ${{ secrets.GHCR_PAT }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install Trivy
       run: |
