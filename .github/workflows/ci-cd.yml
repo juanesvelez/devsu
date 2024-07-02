@@ -37,6 +37,12 @@ jobs:
         coverage xml -o coverage/coverage.xml
         coverage report -m
 
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage-report
+        path: coverage/coverage.xml
+        
     - name: Log in to GitHub Container Registry
       run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
