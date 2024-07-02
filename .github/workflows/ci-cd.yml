@@ -1,0 +1,41 @@
+name: CI Pipeline
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Run unit tests
+      run: python manage.py test
+
+    - name: Lint code
+      run: pip install flake8 && flake8 .
+
+    - name: Code coverage
+      run: pip install coverage && coverage run -m pytest && coverage report
+
+    - name: Log in to GitHub Container Registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+    - name: Build Docker image
+      run: docker build -t ghcr.io/${{ github.repository }}/demo-devops-python:latest .
+
+    - name: Push Docker image to GitHub Container Registry
+      if: success()
+      run: docker push ghcr.io/${{ github.repository }}/demo-devops-python:latest
+
+    - name: Vulnerability scan
+      run: docker scan ghcr.io/${{ github.repository }}/demo-devops-python:latest
