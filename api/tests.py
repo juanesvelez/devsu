@@ -3,7 +3,9 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from .models import User
 
+
 class TestUserView(APITestCase):
+
     def setUp(self):
         self.user = User.objects.create(name='Test1', dni='09876543210')
         self.url_list = reverse("users-list")
