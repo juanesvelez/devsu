@@ -63,4 +63,11 @@ jobs:
         sudo apt-get install trivy -y
 
     - name: Vulnerability scan with Trivy
-      run: trivy image ghcr.io/${{ github.repository }}/demo-devops-python:latest
+      run: trivy image -f json -o trivy-report.json ghcr.io/${{ github.repository }}/demo-devops-python:latest
+
+    - name: Upload Trivy scan report
+      uses: actions/upload-artifact@v2
+      with:
+        name: trivy-scan-report
+        path: trivy-report.json
+          
