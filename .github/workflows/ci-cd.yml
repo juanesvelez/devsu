@@ -65,6 +65,8 @@ jobs:
         git add k8s/deployment.yaml
         git commit -m "Update image tag to ${{ steps.build-image.outputs.tag }}"
         git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GHCR_PAT }}
 
     - name: Install Trivy
       run: |
