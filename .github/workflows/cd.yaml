@@ -35,10 +35,9 @@ jobs:
     - name: Authenticate to GKE
       run: |
         echo "${{ secrets.GCP_SA_KEY }}" > gcp-key.json
-        cat gcp-key.json
         gcloud auth activate-service-account --key-file=gcp-key.json
         gcloud container clusters get-credentials gke-test --zone us-central1-a --project gcp-certification-pnal
         kubectl config set-credentials ${{ secrets.K8S_CLUSTER_USER }} --gke-gcloud-auth-plugin
-
+  
     - name: Apply Kubernetes manifests
       run: kubectl apply -k k8s/
