@@ -60,9 +60,13 @@ jobs:
     - name: Push Docker image to GitHub Container Registry
       run: docker push ghcr.io/${{ github.repository }}/demo-devops-python:${{ steps.build-image.outputs.tag }}
     
+    - name: Ensure marker is present
+      run: |
+        if ! grep -q "IMAGE_TAG" k8s/deployment.yaml; then echo "# IMAGE_TAG" >> k8s/deployment.yaml; fi
+
     - name: Update Kubernetes manifests with new image tag
       run: |
-        sed -i "s#ghcr.io/juanesvelez/devsu/demo-devops-python:.*#ghcr.io/juanesvelez/devsu/demo-devops-python:${{ steps.build-image.outputs.tag }} # IMAGE_TAG#g" k8s/deployment.yaml
+        sed -i.bak "s#ghcr.io/juanesvelez/devsu/demo-devops-python:.*#ghcr.io/juanesvelez/devsu/demo-devops-python:${{ steps.build-image.outputs.tag }} # IMAGE_TAG#g" k8s/deployment.yaml
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
         git add k8s/deployment.yaml
