@@ -66,7 +66,8 @@ jobs:
 
     - name: Update Kubernetes manifests with new image tag
       run: |
-        sed -i.bak "s#ghcr.io/juanesvelez/devsu/demo-devops-python:.*#ghcr.io/juanesvelez/devsu/demo-devops-python:${{ steps.build-image.outputs.tag }} # IMAGE_TAG#g" k8s/deployment.yaml
+        TAG="ghcr.io/juanesvelez/devsu/demo-devops-python:${{ steps.build-image.outputs.tag }} # IMAGE_TAG"
+        sed -i.bak "s#ghcr.io/juanesvelez/devsu/demo-devops-python:.* # IMAGE_TAG#${TAG}#g" k8s/deployment.yaml
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
         git add k8s/deployment.yaml
