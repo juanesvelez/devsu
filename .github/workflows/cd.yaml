@@ -50,7 +50,7 @@ jobs:
             namespace: devsu-demo-devops-python-ns
           type: Opaque
           data:
-            DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY_BASE64 }}
+            DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           EOF
     
     - name: Install Argo CD CLI
