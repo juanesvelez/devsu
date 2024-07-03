@@ -72,7 +72,11 @@ jobs:
         IMAGE_TAG: ${{ github.sha }}
       run: |
         envsubst < k8s/kustomized-manifest.yaml > k8s/kustomized-manifest-processed.yaml
-        cat k8s/kustomized-manifest-processed.yaml | kubectl apply -f -
+        cat k8s/kustomized-manifest-processed.yaml
+        kubectl apply -f k8s/kustomized-manifest-processed.yaml
+
+    - name: Apply Argo CD Application
+      run: kubectl apply -f k8s/application.yaml
     
     - name: Sync with Argo CD
       continue-on-error: true
