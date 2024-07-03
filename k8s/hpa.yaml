@@ -1,7 +1,7 @@
-apiVersion: autoscaling/v2
+apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: hpa-demo-devops-python
+  name: demo-devops-python
   namespace: devsu-demo-devops-python-ns
 spec:
   scaleTargetRef:
@@ -9,17 +9,11 @@ spec:
     kind: Deployment
     name: demo-devops-python
   minReplicas: 2
-  maxReplicas: 5
+  maxReplicas: 10
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 60%
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 90%
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
