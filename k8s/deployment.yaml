@@ -33,13 +33,13 @@ spec:
                   key: DJANGO_SECRET_KEY
           livenessProbe:
             httpGet:
-              path: /health
+              path: /api/health
               port: 8000
             initialDelaySeconds: 60
             periodSeconds: 60
           readinessProbe:
             httpGet:
-              path: /health
+              path: /api/health
               port: 8000
             initialDelaySeconds: 60
             periodSeconds: 60
