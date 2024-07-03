@@ -42,6 +42,7 @@ jobs:
     
     - name: Create or update Kubernetes secret
       run: |
+          DJANGO_SECRET_KEY_BASE64=$(echo -n ${{ secrets.DJANGO_SECRET_KEY }} | base64)
           kubectl apply -f - <<EOF
           apiVersion: v1
           kind: Secret
@@ -50,7 +51,7 @@ jobs:
             namespace: devsu-demo-devops-python-ns
           type: Opaque
           data:
-            DJANGO_SECRET_KEY: $(echo -n ${{ secrets.DJANGO_SECRET_KEY }} | base64)
+            DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY_BASE64}
           EOF
     
     - name: Install Argo CD CLI
