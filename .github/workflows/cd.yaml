@@ -25,7 +25,7 @@ jobs:
     - name: Install gke-gcloud-auth-plugin
       run: |
         sudo apt-get update && \
-        sudo apt-get install -y apt-transport-https ca-certificates gnupg curl && \
+        sudo apt-get install -y apt-transport-https ca-certificates gnupg curl gettext-base && \
         curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && \
         echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
         sudo apt-get update && \
@@ -71,7 +71,8 @@ jobs:
       env:
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        envsubst < k8s/kustomized-manifest.yaml | kubectl apply -f -
+        envsubst < k8s/kustomized-manifest.yaml > k8s/kustomized-manifest-processed.yaml
+        cat k8s/kustomized-manifest-processed.yaml | kubectl apply -f -
     
     - name: Sync with Argo CD
       continue-on-error: true
