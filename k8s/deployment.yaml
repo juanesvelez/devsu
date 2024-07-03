@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: demo-devops-python
-          image: ghcr.io/juanesvelez/devsu:2eda1b079ebe5bfa32ac6cd3935b622c786355c7
+          image: ghcr.io/juanesvelez/devsu/demo-devops-python:bf80472fba2370b5186913f25742a3839a0f213c
           ports:
             - containerPort: 8000
           env:
