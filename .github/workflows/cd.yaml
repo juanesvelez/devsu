@@ -42,7 +42,7 @@ jobs:
     
     - name: Create Kubernetes Secret
       run: |
-        kubectl create secret generic secret-demo-devops-python --from-literal=DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} -n devsu-demo-devops-python-ns
+        kubectl create secret generic secret-demo-devops-python --from-literal=DJANGO_SECRET_KEY="${{ secrets.DJANGO_SECRET_KEY }}" -n devsu-demo-devops-python-ns
     
     - name: Install Argo CD CLI
       run: |
