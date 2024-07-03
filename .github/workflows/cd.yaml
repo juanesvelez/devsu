@@ -40,6 +40,19 @@ jobs:
       run: |
         gcloud container clusters get-credentials gke-test --zone us-central1-a --project gcp-certification-pnal
 
+    - name: Install Kustomize
+      run: |
+        curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+        sudo mv kustomize /usr/local/bin/
+
+    - name: Generate Kustomize manifests
+      run: kustomize build k8s > k8s/kustomized-manifest.yaml
+      env:
+        DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+
+    - name: Apply Kustomize secrets
+      run: kubectl apply -f k8s/kustomized-manifest.yaml
+
     - name: Install Argo CD CLI
       run: |
         curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
@@ -47,24 +60,9 @@ jobs:
 
     - name: Login to Argo CD
       run: |
-        kubectl port-forward svc/argocd-server -n argocd 8080:443 & echo $! >> /tmp/port-forward-pid
-        sleep 5
+        kubectl port-forward svc/argocd-server -n argocd 8080:443 &
+        sleep 10
         argocd login --insecure --grpc-web localhost:8080 --username admin --password ZxcVbnM2020!
-        
-    # - name: Install kustomize
-    #   run: |
-    #     curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
-    #     sudo mv kustomize /usr/local/bin/
 
-    # - name: Install kubectl
-    #   run: |
-    #     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-    #     sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-
-    # - name: Sync with Argo CD
-    #   run: |
-    #     kubectl apply -f k8s/application.yaml
-    #     argocd app sync demo-devops-python
-
-    # - name: Apply Kubernetes manifests
-    #   run: kubectl apply -k k8s/
+    - name: Sync with Argo CD
+      run: argocd app sync demo-devops-python
