@@ -53,15 +53,10 @@ jobs:
       run: kubectl apply -f k8s/application.yaml
 
     - name: Sync with Argo CD
+      continue-on-error: true
       run: |
         kubectl port-forward svc/argocd-server -n argocd 8080:443 & echo $! > /tmp/port-forward-pid
         sleep 5
         argocd login --insecure --grpc-web localhost:8080 --username admin --password ZxcVbnM2020!
-        n=0
-        until [ $n -ge 5 ]
-        do
-          argocd app sync demo-devops-python && break
-          n=$((n+1))
-          sleep 15
-        done
+        argocd app sync demo-devops-python
         kill $(cat /tmp/port-forward-pid)
