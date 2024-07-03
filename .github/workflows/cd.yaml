@@ -46,6 +46,8 @@ jobs:
         chmod +x /usr/local/bin/argocd
 
     - name: Kustomize build
+      env:
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
       run: |
         kustomize build k8s > k8s/kustomized-manifest.yaml
 
