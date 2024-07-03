@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 permissions:
   contents: write
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -62,7 +62,7 @@ jobs:
 
     - name: Update Kubernetes manifests with new image tag
       run: |
-        sed -i "s#ghcr.io/juanesvelez/devsu:.*#ghcr.io/juanesvelez/devsu:${{ steps.build-image.outputs.tag }}#g" k8s/deployment.yaml
+        sed -i "s#ghcr.io/juanesvelez/devsu:.*#ghcr.io/juanesvelez/devsu/demo-devops-python:${{ steps.build-image.outputs.tag }}#g" k8s/deployment.yaml
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
         git add k8s/deployment.yaml
