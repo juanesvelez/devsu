@@ -45,12 +45,17 @@ jobs:
         curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
         chmod +x /usr/local/bin/argocd
 
-    - name: Login to Argo CD and Sync
+    - name: Kustomize build
+      run: |
+        kustomize build k8s > k8s/kustomized-manifest.yaml
+
+    - name: Apply Argo CD Application
+      run: kubectl apply -f k8s/application.yaml
+
+    - name: Sync with Argo CD
       run: |
         kubectl port-forward svc/argocd-server -n argocd 8080:443 & echo $! > /tmp/port-forward-pid
         sleep 5
         argocd login --insecure --grpc-web localhost:8080 --username admin --password ZxcVbnM2020!
         argocd app sync demo-devops-python
-
-    - name: Apply Kubernetes manifests
-      run: kubectl apply -k k8s/
+        kill $(cat /tmp/port-forward-pid)
