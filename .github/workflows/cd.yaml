@@ -31,13 +31,26 @@ jobs:
         sudo apt-get update && \
         sudo apt-get install -y google-cloud-sdk google-cloud-sdk-gke-gcloud-auth-plugin kubectl
 
-
     - name: Authenticate to GKE
       run: |
         echo "${{ secrets.GCP_SA_KEY }}" > gcp-key.json
         gcloud auth activate-service-account --key-file=gcp-key.json
         gcloud container clusters get-credentials gke-test --zone us-central1-a --project gcp-certification-pnal
         kubectl config set-credentials ${{ secrets.K8S_CLUSTER_USER }} --gke-gcloud-auth-plugin
-  
+
+    - name: Install Argo CD CLI
+      run: |
+        curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        chmod +x /usr/local/bin/argocd
+
+    - name: Authenticate Argo CD CLI
+      run: |
+        argocd login ${{ secrets.ARGOCD_SERVER }} --username ${{ secrets.ARGOCD_USERNAME }} --password ${{ secrets.ARGOCD_PASSWORD }} --insecure
+
+    - name: Sync with Argo CD
+      run: |
+        kubectl apply -f k8s/application.yaml
+        argocd app sync demo-devops-python
+
     - name: Apply Kubernetes manifests
       run: kubectl apply -k k8s/
