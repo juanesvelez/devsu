@@ -68,8 +68,9 @@ jobs:
       run: kubectl apply -f k8s/application.yaml
     
     - name: Apply Kubernetes manifests with dynamic tag
+      env:
+        IMAGE_TAG: ${{ github.sha }}
       run: |
-        export IMAGE_TAG=${{ github.event.inputs.tag }}
         envsubst < k8s/kustomized-manifest.yaml | kubectl apply -f -
     
     - name: Sync with Argo CD
