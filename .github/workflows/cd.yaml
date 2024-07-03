@@ -46,22 +46,25 @@ jobs:
         chmod +x /usr/local/bin/argocd
 
     - name: Login to Argo CD
-      run: argocd login localhost:8080 --username admin --password ZxcVbnM2020! --insecure
-
-    - name: Install kustomize
       run: |
-        curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
-        sudo mv kustomize /usr/local/bin/
+        kubectl get pods -n argocd
+        kubectl port-forward svc/argocd-server -n argocd 8080:443 & echo $! >> /tmp/port-forward-pid
+        argocd login localhost:8080 --username admin --password ZxcVbnM2020! --insecure
+        
+    # - name: Install kustomize
+    #   run: |
+    #     curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+    #     sudo mv kustomize /usr/local/bin/
 
-    - name: Install kubectl
-      run: |
-        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-        sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+    # - name: Install kubectl
+    #   run: |
+    #     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    #     sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
-    - name: Sync with Argo CD
-      run: |
-        kubectl apply -f k8s/application.yaml
-        argocd app sync demo-devops-python
+    # - name: Sync with Argo CD
+    #   run: |
+    #     kubectl apply -f k8s/application.yaml
+    #     argocd app sync demo-devops-python
 
-    - name: Apply Kubernetes manifests
-      run: kubectl apply -k k8s/
+    # - name: Apply Kubernetes manifests
+    #   run: kubectl apply -k k8s/
