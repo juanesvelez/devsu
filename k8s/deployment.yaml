@@ -20,11 +20,14 @@ spec:
             - containerPort: 8000
           env:
             - name: DATABASE_NAME
-              value: db.sqlite3
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap-demo-devops-python
+                  key: DATABASE_NAME
             - name: DJANGO_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: django-secret
+                  name: secret-demo-devops-python
                   key: DJANGO_SECRET_KEY
           livenessProbe:
             httpGet:
