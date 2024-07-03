@@ -40,9 +40,8 @@ jobs:
       run: |
         gcloud container clusters get-credentials gke-test --zone us-central1-a --project gcp-certification-pnal
     
-    - name: Create or update Kubernetes secret
+    - name: Create Kubernetes Secret
       run: |
-          DJANGO_SECRET_KEY_BASE64=$(echo -n ${{ secrets.DJANGO_SECRET_KEY }} | base64)
           kubectl apply -f - <<EOF
           apiVersion: v1
           kind: Secret
@@ -51,7 +50,7 @@ jobs:
             namespace: devsu-demo-devops-python-ns
           type: Opaque
           data:
-            DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY_BASE64}
+            DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY_BASE64 }}
           EOF
     
     - name: Install Argo CD CLI
