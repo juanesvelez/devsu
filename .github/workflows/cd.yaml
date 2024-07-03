@@ -44,10 +44,11 @@ jobs:
       run: |
         curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
         chmod +x /usr/local/bin/argocd
-
+    - name: Create secrets.env file
+      run: |
+        echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" > k8s/secrets.env
+    
     - name: Kustomize build
-      env:
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
       run: |
         kustomize build k8s > k8s/kustomized-manifest.yaml
 

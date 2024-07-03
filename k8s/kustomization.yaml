@@ -2,7 +2,7 @@ resources:
   - deployment.yaml
   - service.yaml
   - hpa.yaml
-  
+
 configMapGenerator:
   - name: configmap-demo-devops-python
     literals:
@@ -10,8 +10,8 @@ configMapGenerator:
 
 secretGenerator:
   - name: secret-demo-devops-python
-    literals:
-      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+    envs:
+      - secrets.env #
 
 generatorOptions:
   disableNameSuffixHash: true
