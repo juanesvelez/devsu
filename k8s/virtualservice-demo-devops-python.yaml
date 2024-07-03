@@ -1,0 +1,27 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: demo-devops-python-virtualservice
+  namespace: devsu-demo-devops-python-ns
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - istio-system/general-gateway 
+  http:
+  - match:
+    - uri:
+        prefix: /api
+    route:
+    - destination:
+        host: demo-devops-python.devsu-demo-devops-python-ns.svc.cluster.local
+        port:
+          number: 80
+  - match:
+    - uri:
+        prefix: /admin
+    route:
+    - destination:
+        host: demo-devops-python.devsu-demo-devops-python-ns.svc.cluster.local
+        port:
+          number: 80

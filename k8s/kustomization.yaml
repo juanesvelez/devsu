@@ -2,6 +2,7 @@ resources:
   - deployment.yaml
   - service.yaml
   - hpa.yaml
+  - virtualservice-demo-devops-python.yaml
 
 configMapGenerator:
   - name: configmap-demo-devops-python
