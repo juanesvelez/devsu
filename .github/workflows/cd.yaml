@@ -57,5 +57,11 @@ jobs:
         kubectl port-forward svc/argocd-server -n argocd 8080:443 & echo $! > /tmp/port-forward-pid
         sleep 5
         argocd login --insecure --grpc-web localhost:8080 --username admin --password ZxcVbnM2020!
-        argocd app sync demo-devops-python
+        n=0
+        until [ $n -ge 5 ]
+        do
+          argocd app sync demo-devops-python && break
+          n=$((n+1))
+          sleep 15
+        done
         kill $(cat /tmp/port-forward-pid)
