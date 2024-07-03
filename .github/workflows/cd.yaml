@@ -47,9 +47,7 @@ jobs:
 
     - name: Login to Argo CD
       run: |
-        kubectl get pods -n argocd
-        kubectl port-forward svc/argocd-server -n argocd 8080:443 & echo $! >> /tmp/port-forward-pid
-        argocd login localhost:8080 --username admin --password ZxcVbnM2020! --insecure
+        kubectl port-forward svc/argocd-server -n argocd 8080:443 & echo $! >> /tmp/port-forward-pid && argocd login --insecure --grpc-web localhost:8080 --username admin --password ZxcVbnM2020!
         
     # - name: Install kustomize
     #   run: |
