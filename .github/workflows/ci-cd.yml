@@ -62,11 +62,11 @@ jobs:
 
     - name: Update Kubernetes manifests with new image tag
       run: |
+        echo "# Temporary change to ensure commit" >> k8s/deployment.yaml
         sed -i "s#ghcr.io/juanesvelez/devsu:.*#ghcr.io/juanesvelez/devsu/demo-devops-python:${{ steps.build-image.outputs.tag }}#g" k8s/deployment.yaml
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
         git add k8s/deployment.yaml
-        git add .coverage coverage/
         git commit -m "Update image tag to ${{ steps.build-image.outputs.tag }}"
         git push
       env:
@@ -89,4 +89,3 @@ jobs:
       with:
         name: trivy-scan-report
         path: trivy-report.json
-          

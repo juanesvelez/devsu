@@ -1,91 +1,36 @@
-name: CI Pipeline
+name: CD Pipeline
 
-on: [push, pull_request]
-
-permissions:
-  contents: write
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v1
       with:
-        python-version: '3.11'
+        version: 'latest'
 
-    - name: Install dependencies
-      run: pip install -r requirements.txt
-
-    - name: Run migrations
-      run: |
-        python manage.py makemigrations
-        python manage.py migrate
-        
-    - name: Lint code
-      run: pip install flake8 && flake8 .
-    
-    - name: Run unit tests
-      run: python manage.py test
-
-    - name: Generate coverage report
-      run: |
-        pip install coverage
-        coverage run --source='.' manage.py test
-        coverage report
-        coverage xml -o coverage/coverage.xml
-        coverage report -m
-
-    - name: Upload coverage report
-      uses: actions/upload-artifact@v2
+    - name: Authenticate to GKE
+      uses: google-github-actions/auth@v0
       with:
-        name: coverage-report
-        path: coverage/coverage.xml
-        
-    - name: Log in to GitHub Container Registry
-      run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-    - name: Build Docker image
-      id: build-image
+    - name: Get GKE credentials
+      run: gcloud container clusters get-credentials YOUR_CLUSTER_NAME --zone YOUR_CLUSTER_ZONE --project YOUR_PROJECT_ID
+
+    - name: Deploy to Kubernetes
+      run: kubectl apply -k k8s/
+
+    - name: Sync with Argo CD
       run: |
-        TAG=${{ github.sha }}
-        docker build -t ghcr.io/${{ github.repository }}/demo-devops-python:${TAG} .
-        echo "::set-output name=tag::${TAG}"
-        echo "Built image with tag $TAG"
-
-    - name: Push Docker image to GitHub Container Registry
-      run: docker push ghcr.io/${{ github.repository }}/demo-devops-python:${{ steps.build-image.outputs.tag }}
-
-    - name: Update Kubernetes manifests with new image tag
-      run: |
-        echo "# Temporary change to ensure commit" >> k8s/deployment.yaml
-        sed -i "s#ghcr.io/juanesvelez/devsu:.*#ghcr.io/juanesvelez/devsu/demo-devops-python:${{ steps.build-image.outputs.tag }}#g" k8s/deployment.yaml
-        git config --global user.email "action@github.com"
-        git config --global user.name "GitHub Action"
-        git add k8s/deployment.yaml
-        git commit -m "Update image tag to ${{ steps.build-image.outputs.tag }}"
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Install Trivy
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install wget apt-transport-https gnupg lsb-release -y
-        wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-        echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
-        sudo apt-get update -y
-        sudo apt-get install trivy -y
-
-    - name: Vulnerability scan with Trivy
-      run: trivy image -f json -o trivy-report.json ghcr.io/${{ github.repository }}/demo-devops-python:latest
-
-    - name: Upload Trivy scan report
-      uses: actions/upload-artifact@v2
-      with:
-        name: trivy-scan-report
-        path: trivy-report.json
+        kubectl apply -f k8s/argo-application.yaml
+        argocd app sync demo-devops-python
