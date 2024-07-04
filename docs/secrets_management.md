@@ -10,7 +10,7 @@ En la implementación de los pipelines CI y CD, se han utilizado varios secretos
 
 **Uso**:
 ```yaml
-run: echo "\${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+run: echo "$secrets.GHCR_PAT" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 ```
 
 ### 2. GITHUB_TOKEN
@@ -20,7 +20,7 @@ run: echo "\${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor 
 **Uso**:
 ```yaml
 env:
-  GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: $secrets.GITHUB_TOKEN
 ```
 
 ### 3. GHCR_PAT
@@ -30,7 +30,7 @@ env:
 **Uso**:
 ```yaml
 - name: Log in to GitHub Container Registry
-  run: echo "\${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+  run: echo "$secrets.GHCR_PAT | docker login ghcr.io -u $github.actor --password-stdin
 ```
 
 ### 4. GITHUB_TOKEN
@@ -41,7 +41,7 @@ env:
 ```yaml
 - name: Update Kubernetes manifests with new image tag
   env:
-    GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+    GITHUB_TOKEN: $secrets.GITHUB_TOKEN
   run: |
     sed -i "s#^ *image: .*#          image: ghcr.io/juanesvelez/devsu/demo-devops-python:\${{ steps.build-image.outputs.tag }}#g" k8s/deployment.yaml
 ```
@@ -55,7 +55,7 @@ env:
 - name: Sync with Argo CD
   continue-on-error: true
   run: |
-    argocd login --insecure --grpc-web localhost:8080 --username admin --password "\${{ secrets.ARGOCD_ADMIN_PASSWORD }}"
+    argocd login --insecure --grpc-web localhost:8080 --username admin --password "$secrets.ARGOCD_ADMIN_PASSWORD"
 ```
 
 ### 6. DJANGO_SECRET_KEY
@@ -72,10 +72,10 @@ El DJANGO_SECRET_KEY se maneja de forma segura en el pipeline de CD mediante la 
       namespace: devsu-demo-devops-python-ns
     type: Opaque
     stringData:
-      DJANGO_SECRET_KEY: "\${{ secrets.DJANGO_SECRET_KEY }}"
+      DJANGO_SECRET_KEY: "$secrets.DJANGO_SECRET_KEY"
     EOF
   env:
-    DJANGO_SECRET_KEY: "\${{ secrets.DJANGO_SECRET_KEY }}"
+    DJANGO_SECRET_KEY: "$secrets.DJANGO_SECRET_KEY"
 ```
 
 ### Protección de la Información Sensible
