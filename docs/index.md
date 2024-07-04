@@ -9,7 +9,7 @@ Este documento describe la implementación de una aplicación web utilizando Doc
 - [Dockerfile](docker.md)
 - [Recursos de Kubernetes](kubernetes_resources.md)
 - [Gestión de Secretos](secrets_management.md)
-- [Diagramas](diagrams.md)
+- [Diagrama](diagrams.md)
 
 
 ## Acceso a Argo CD
