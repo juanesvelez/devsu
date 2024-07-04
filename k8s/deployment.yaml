@@ -55,5 +55,6 @@ spec:
               cpu: "120m"
       volumes:
         - name: demo-devops-python-storage
-          persistentVolumeClaim:
-            claimName: demo-devops-python-pvc
+          hostPath:
+            path: /mnt/data/demo-devops-python
+            type: DirectoryOrCreate
