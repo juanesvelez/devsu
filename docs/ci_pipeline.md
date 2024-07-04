@@ -1,6 +1,6 @@
 # CI Pipeline
 
-La pipeline de integración continua (CI) se encarga de asegurar que cada cambio en el código se construya, se pruebe y se valide automáticamente antes de fusionarse en la rama principal. A continuación se detallan los pasos involucrados en esta pipeline.
+El pipeline de integración continua (CI) se encarga de asegurar que cada cambio en el código se construya, se pruebe y se valide automáticamente antes de fusionarse en la rama principal. A continuación se detallan los pasos involucrados en este pipeline.
 
 ## Pasos de la Pipeline
 
@@ -135,6 +135,7 @@ Este paso ejecuta un análisis de vulnerabilidades en la imagen Docker utilizand
   run: trivy image -f json -o trivy-report.json ghcr.io/${{ github.repository }}/demo-devops-python:latest
 ```
 
+```yaml
 ### Subir Informe de Trivy
 - name: Upload Trivy scan report
   uses: actions/upload-artifact@v2
