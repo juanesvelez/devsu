@@ -11,8 +11,6 @@ Este documento describe la implementación de una aplicación web utilizando Doc
 - [Gestión de Secretos](secrets_management.md)
 - [Diagramas](diagrams.md)
 
-## Introducción
-Este documento describe el proceso de creación, configuración y despliegue de una aplicación utilizando Docker, Kubernetes y GitHub Actions.
 
 ## Acceso a Argo CD
 Puedes acceder a la interfaz de Argo CD en el siguiente enlace: [Argo CD](https://34.30.114.5/argocd).
