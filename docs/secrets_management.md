@@ -10,7 +10,7 @@ En la implementación de los pipelines CI y CD, se han utilizado varios secretos
 
 **Uso**:
 ```yaml
-run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+run: echo "\${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 ```
 
 ### 2. GITHUB_TOKEN
@@ -20,7 +20,7 @@ run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }
 **Uso**:
 ```yaml
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### 3. GHCR_PAT
@@ -30,7 +30,7 @@ env:
 **Uso**:
 ```yaml
 - name: Log in to GitHub Container Registry
-  run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+  run: echo "\${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 ```
 
 ### 4. GITHUB_TOKEN
@@ -41,9 +41,9 @@ env:
 ```yaml
 - name: Update Kubernetes manifests with new image tag
   env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
   run: |
-    sed -i "s#^ *image: .*#          image: ghcr.io/juanesvelez/devsu/demo-devops-python:${{ steps.build-image.outputs.tag }}#g" k8s/deployment.yaml
+    sed -i "s#^ *image: .*#          image: ghcr.io/juanesvelez/devsu/demo-devops-python:\${{ steps.build-image.outputs.tag }}#g" k8s/deployment.yaml
 ```
 
 ### 5. ARGOCD_ADMIN_PASSWORD
@@ -55,7 +55,27 @@ env:
 - name: Sync with Argo CD
   continue-on-error: true
   run: |
-    argocd login --insecure --grpc-web localhost:8080 --username admin --password ${{ secrets.ARGOCD_ADMIN_PASSWORD }}
+    argocd login --insecure --grpc-web localhost:8080 --username admin --password "\${{ secrets.ARGOCD_ADMIN_PASSWORD }}"
+```
+
+### 6. DJANGO_SECRET_KEY
+El DJANGO_SECRET_KEY se maneja de forma segura en el pipeline de CD mediante la creación de un Kubernetes Secret directamente desde el valor almacenado en GitHub Secrets. Esto garantiza que la clave nunca se exponga en el código fuente. Aquí está el paso del pipeline que realiza esta operación:
+
+```yaml
+- name: Create Kubernetes Secret
+  run: |
+    kubectl apply -f - <<EOF
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: secret-demo-devops-python
+      namespace: devsu-demo-devops-python-ns
+    type: Opaque
+    stringData:
+      DJANGO_SECRET_KEY: "\${{ secrets.DJANGO_SECRET_KEY }}"
+    EOF
+  env:
+    DJANGO_SECRET_KEY: "\${{ secrets.DJANGO_SECRET_KEY }}"
 ```
 
 ### Protección de la Información Sensible
@@ -67,5 +87,6 @@ Las variables de entorno mencionadas se han almacenado de forma segura en los se
 - **GCP_SA_KEY**: Utilizado para autenticar con Google Cloud Platform y obtener las credenciales del clúster de Kubernetes.
 - **K8S_CLUSTER_USER**: Utilizado para autenticar con el clúster de Kubernetes.
 - **ARGOCD_ADMIN_PASSWORD**: Utilizado para autenticar con Argo CD y sincronizar aplicaciones.
+- **DJANGO_SECRET_KEY**: Utilizado para operaciones criptográficas en la aplicación Django.
 
 Estos secretos se han configurado en el repositorio de GitHub bajo `Settings > Secrets and variables > Actions`.

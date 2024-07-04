@@ -23,7 +23,25 @@ Este paso configura `kubectl` para que pueda interactuar con el clúster de Kube
   with:
     version: 'latest'
 ```
+### Creación de Secret
+Para manejar información sensible como la clave secreta de Django, utilizamos Kubernetes Secrets. En este caso, el secret fue creado directamente desde el pipeline de CD utilizando un comando kubectl apply.
 
+```yaml
+    - name: Create Kubernetes Secret
+      run: |
+          kubectl apply -f - <<EOF
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: secret-demo-devops-python
+            namespace: devsu-demo-devops-python-ns
+          type: Opaque
+          stringData:
+            DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          EOF
+      env:
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+```
 ### Instalación del plugin de autenticación de Google Cloud para GKE
 
 Este paso instala el plugin `gke-gcloud-auth-plugin` necesario para la autenticación con GKE.
