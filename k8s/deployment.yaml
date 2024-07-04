@@ -31,6 +31,9 @@ spec:
                 secretKeyRef:
                   name: secret-demo-devops-python
                   key: DJANGO_SECRET_KEY
+          volumeMounts:
+            - name: demo-devops-python-storage
+              mountPath: /app/data
           livenessProbe:
             httpGet:
               path: /api/health
@@ -50,3 +53,7 @@ spec:
             limits:
               memory: "128Mi"
               cpu: "120m"
+      volumes:
+        - name: demo-devops-python-storage
+          persistentVolumeClaim:
+            claimName: demo-devops-python-pvc

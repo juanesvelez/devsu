@@ -3,17 +3,13 @@ resources:
   - service.yaml
   - hpa.yaml
   - virtualservice-demo-devops-python.yaml
+  - pv.yaml
+  - pvc.yaml
 
 configMapGenerator:
   - name: configmap-demo-devops-python
     literals:
       - DATABASE_NAME=db.sqlite3
-
-# secretGenerator:
-#   - name: secret-demo-devops-python
-#     literals:
-#       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-      
 
 generatorOptions:
   disableNameSuffixHash: true
