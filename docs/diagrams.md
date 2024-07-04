@@ -1,30 +1,6 @@
 # Diagrama de la Aplicación
 
-```mermaid
-graph TD
-  A[Desarrollador] --> B[GitHub]
-  B --> C[GitHub Actions] --> C1
-
-  subgraph "GitHub Actions"
-    C1[CI Pipeline]
-    C1 -->|Desencadena| C2[CD Pipeline]
-    C1 --> C3[Construcción de la Imagen Docker]
-    C3 --> C4[Publicación en GitHub Container Registry]
-    C2 --> K[Argo CD]
-  end
-  
-
-  subgraph "Clúster de Kubernetes"
-    E[Aplicación Django]
-    H[Istio-Ingress]
-    H --> E
-    E --> J[Volúmenes Persistentes]
-    K --> L[Sincronización de Aplicación]
-    L --> E
-  end
-  
-  U[Usuario] --> H
-```
+![Diagrama de la Aplicación](./diagrama_devsu.jpg)
 
 ## Descripción del Diagrama de la Aplicación
 
