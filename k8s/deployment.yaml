@@ -3,6 +3,10 @@ kind: Deployment
 metadata:
   name: demo-devops-python
   namespace: devsu-demo-devops-python-ns
+  labels:
+    app: devsu
+    team: devops
+    environment: production
 spec:
   replicas: 2
   selector:
