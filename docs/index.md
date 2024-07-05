@@ -72,3 +72,8 @@ curl -X POST http://35.224.250.136/api/users/ -H "Content-Type: application/json
 ```bash
 curl -X GET http://35.224.250.136/api/users/ | jq
 ```
+
+### Clonar Repo 
+```bash
+git@github.com:juanesvelez/devsu.git
+```
