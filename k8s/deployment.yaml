@@ -21,7 +21,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: demo-devops-python
-          image: ghcr.io/juanesvelez/devsu/demo-devops-python:2f6fe59df0875b821d63b9c96b3f62eb247ed539
+          image: ghcr.io/juanesvelez/devsu/demo-devops-python:ee02408175fe7794f820c3fcd263f26e76bbfd98
           ports:
             - containerPort: 8000
           env:
